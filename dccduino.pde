@@ -18,11 +18,12 @@ See the GNU General Public License for more details.
                      // this pin is connected to "DIRECTION" of LMD18200
 #define DCC_PWM    5  // must be HIGH for signal out
                       // connected to "PWM in" of LMD18200
-#define joystick_1_x_PIN   3  // analog reading for Speed Poti
-#define joystick_1_y_PIN   2  // analog reading for Speed Poti
+#define joystick_1_x_PIN   3  // analog reading for joystick Poti
+#define joystick_1_y_PIN   2  // analog reading for joystick Poti
 #define clickPin 2   //input for switch
 
 //Timer frequency is 2MHz for ( /8 prescale from 16MHz )
+//Timmer clock = 16MHz/8 = 2MHz oder 0,5usec
 #define TIMER_SHORT 0x8D  // 58usec pulse length 
 #define TIMER_LONG  0x1B  // 116usec pulse length 
 
@@ -46,7 +47,7 @@ unsigned char cbit = 0x80;
 // variables for throttle
 int locoSpeed=0;
 int locoSpeed_temp=0;
-int direction = 0;
+volatile int direction  = 0;
 int last_locoSpeed=0;
 int last_direction;
 int locoAdr=7;   // this is the (fixed) address of the loco
@@ -212,7 +213,15 @@ lcd.home();
       lcd.print("   ");
       lcd.setCursor(0,1);
       lcd.print("Richtung:");
-      lcd.print(direction);
+      if (locoSpeed == 0)  {
+        lcd.print("halt         ");
+      }
+       if (locoSpeed > 0)  {
+        lcd.print("vorwaerts     ");
+      }
+       if (locoSpeed < 0)  {
+        lcd.print("rueckwaerts    ");
+      }
     lcd.setCursor(0,2);
     lcd.print("joystick:");
     lcd.print(joystick_1_x);
@@ -233,9 +242,11 @@ void assemble_dcc_msg() {
    if (locoSpeed < 0) {
      locoSpeed_temp = -locoSpeed;
      data = 0;
+     direction = 0;
    } else {
      locoSpeed_temp = locoSpeed;
      data = 0x80; //forward
+     direction = 1;
    }
    data |=  locoSpeed_temp;
    // add XOR byte 
