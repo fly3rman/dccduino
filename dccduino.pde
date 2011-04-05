@@ -1,4 +1,4 @@
-/*Copyright Dimitri Henning, based on code of 2009 Michael Blank
+/*Enhanced and edited by Dimitri Henning, based on code of 2009 Michael Blank
 
 This program is free software; you can redistribute it and/or modify it under the terms of the 
 GNU General Public License as published by the Free Software Foundation; 
